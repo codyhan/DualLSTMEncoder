@@ -8,8 +8,9 @@ import numpy as np
 from keras.layers import Merge
 import sys
 import h5py
-from keras.regularizers import l2, activity_l2
+from keras.regularizers import l2
 from keras import callbacks
+from keras.models import load_model
 def train(args):
     print "Loading data ..."
     x1, x2, y, vocab_size, maxseqc, maxsequ = load_train(args.data_file)
@@ -58,6 +59,11 @@ def train(args):
     merged_model.save(filepath=args.save_path+"/final_model.hdf5")
 
 
+def train_fr(args):
+    x1, x2, y, vocab_size, maxseqc, maxsequ = load_train(args.data_file)
+    model = load_model(args.train_from)
+    model.fit([x1,x2], y,validation_split=0.001, batch_size=args.batch_size, nb_epoch=args.epochs,callbacks=[callbacks.ModelCheckpoint(args.save_path+"/m_{epoch:02d}.hdf5"),callbacks.TensorBoard(log_dir=args.log_path, histogram_freq=1)])
+    model.save(filepath=args.save_path + "/final_model.hdf5")
 
 def load_train(path):
     f = h5py.File(path, "r")
@@ -98,17 +104,16 @@ def load_dict(path):
 
 def main(arguments):
     parser = argparse.ArgumentParser(description=__doc__,formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--data_file', help="Path to training data file", required=True)
-    parser.add_argument('--valid_file', help="Path to validation data file")
+    parser.add_argument('--data_file', help="Path to load training data file", required=True)
     parser.add_argument('--save_path', help="Path to save checking points")
-    parser.add_argument('--log_path', help="Path to tensorboard")
-
+    parser.add_argument('--log_path', help="Path to save tensorboard logs")
+    parser.add_argument('--train_from',help="Train from a save point")
     parser.add_argument('--pre_word_vec',help="If a valid path specified, pre-trained word embeddings will be loaded",type=str)
     parser.add_argument('--fix_word_vec',help="If true, word embeddings will be fixed once initialized",type=bool,default=False)
 
     parser.add_argument('--lr', help="Learning rate", type=float, default=0.001)
-    parser.add_argument('--word_vec_size', help="Word embedding size",type=int, default=50)
-    parser.add_argument('--rnn_size', help="Size of LSTM hidden states",type=int,default=128)
+    parser.add_argument('--word_vec_size', help="Word embedding size",type=int, default=100)
+    parser.add_argument('--rnn_size', help="Size of LSTM hidden states",type=int,default=200)
     parser.add_argument('--num_layers', help="Number of LSTM layers", type=int, default=1)
     parser.add_argument('--dropout_lstm', help="Dropout rate for LSTM layer", type=float, default=0.2)
     parser.add_argument('--l2', help="l2 regularizer", type=float, default=0.001)
@@ -116,13 +121,16 @@ def main(arguments):
     #parser.add_argument('--mlp_size', help="Number of hidden neurons in MLP layer", type=int, default=256)
     parser.add_argument('--dropout_mlp', help="Dropout rate for MLP layer", type=float, default=0.2)
 
-    parser.add_argument('--loss',help="Loss function", type=str,default='binary_crossentropy')
-    parser.add_argument('--metrics',help="Evaluation metrics", type=str, default='fmeasure')
+    parser.add_argument('--loss',help="Loss function",choices=['binary_crossentropy','cosine_proximity'],default='binary_crossentropy')
+    parser.add_argument('--metrics',help="Evaluation metrics",choices=['fmeasure', 'recall', 'precision','accuracy'],default='fmeasure')
 
     parser.add_argument('--batch_size',help="Batch size",type=int,default=128)
     parser.add_argument('--epochs',help="Number of epochs",type=int,default=10)
     args = parser.parse_args(arguments)
-    train(args)
+    if not args.train_from=="":
+        train(args)
+    else:
+        train_fr(args)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))

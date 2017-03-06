@@ -1,6 +1,8 @@
 import numpy as np
 import h5py
 from keras.models import load_model
+import argparse
+import sys
 
 def recall(predy, k):
     num_correct = 0
@@ -12,18 +14,26 @@ def recall(predy, k):
     return num_correct/float(num_examples)
 
 
-def load_valid(path):
+def load_data(path):
     f = h5py.File(path, "r")
-    x1 = f["valid_q"][:]
-    x2 = f["valid_r"][:]
-    y = f["valid_y"][:]
+    x1 = f["x1"][:]
+    x2 = f["x2"][:]
+    y = f["y"][:]
     f.close()
     return x1, x2, y
 
-model = load_model("./cc/m_05.hdf5")
-x1,x2,y=load_valid("./ubun-valid.hdf5")
-predy = model.predict([x1,x2])
-predy = [i[0] for i in predy]
-print recall(predy,1)
-print recall(predy,2)
-print recall(predy,5)
+
+def main(arguments):
+    parser = argparse.ArgumentParser(description=__doc__,formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--model_path', help="Path to model",required=True)
+    parser.add_argument('--data_path', help="Path to validation data", required=True)
+    args = parser.parse_args(arguments)
+    model = load_model(args.model_path)
+    x1, x2, y = load_data(args.data_path)
+    predy = model.predict([x1, x2])
+    predy = [i[0] for i in predy]
+    print "Recall 1 in 10 @ 1:",recall(predy,1)
+    print "Recall 1 in 10 @ 2:",recall(predy,2)
+    print "Recall 1 in 10 @ 5:",recall(predy,5)
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))

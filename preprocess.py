@@ -73,7 +73,7 @@ def convert(datafile,vocab,seql1,seql2):
                 count = count +1
                 if count%100000==0:
                     print count," lines processed"
-                    break
+                    #break
                 if len(row)!=3:
                     continue
                 qry = tokenize(row[0])
@@ -96,7 +96,7 @@ def convert(datafile,vocab,seql1,seql2):
     yarray = np.array(y)
     return qarray, rarray, yarray
 
-#convert validation data
+#convert validation/test data
 def convert2(datafile,vocab,seql1,seql2):
     qlist = []
     rlist = []
@@ -109,7 +109,7 @@ def convert2(datafile,vocab,seql1,seql2):
                 count = count +1
                 if count%1000==0:
                     print count," lines processed"
-                    break
+                    #break
                 if len(row)<11:
                     continue
                 qry = tokenize(row[0])
@@ -146,26 +146,36 @@ def get_data(args):
     train_q,train_r,train_y=convert(args.trainfile,dic,args.maxseqc,args.maxsequ)
     print "Saving training data ..."
     f = h5py.File(args.outputfile+"-train.hdf5", "w")
-    f["train_q"]=train_q
-    f["train_r"]=train_r
-    f["train_y"]=train_y
+    f["x1"]=train_q
+    f["x2"]=train_r
+    f["y"]=train_y
     f["maxseqc"]=np.array([args.maxseqc])
     f["maxsequ"] = np.array([args.maxsequ])
     f["vocabsize"]=np.array([min(args.vocabsize,len(dic))])
     f.close()
-    print "Converting validation data ... \n"
-    valid_q,valid_r,valid_y=convert2(args.validfile,dic,args.maxseqc,args.maxsequ)
-    f = h5py.File(args.outputfile+"-valid.hdf5", "w")
-    f["valid_q"]=valid_q
-    f["valid_r"]=valid_r
-    f["valid_y"]=valid_y
-    f.close()
+    if not args.validfile=='':
+        print "Converting validation data ... \n"
+        valid_q,valid_r,valid_y=convert2(args.validfile,dic,args.maxseqc,args.maxsequ)
+        f = h5py.File(args.outputfile+"-valid.hdf5", "w")
+        f["x1"]=valid_q
+        f["x2"]=valid_r
+        f["y"]=valid_y
+        f.close()
+    if not args.testfile=='':
+        print "Converting test data ... \n"
+        test_q,test_r,test_y=convert2(args.validfile,dic,args.maxseqc,args.maxsequ)
+        f = h5py.File(args.outputfile+"-test.hdf5", "w")
+        f["x1"]=test_q
+        f["x2"]=test_r
+        f["y"]=test_y
+        f.close()
 
 def main(arguments):
     parser = argparse.ArgumentParser(description=__doc__,formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--vocabsize', help="Size of vocabulary, constructed by taking the top X most frequent words. Rest are replaced with special UNK tokens.",type=int, default=70000)
     parser.add_argument('--trainfile', help="Path to training data", required=True)
-    parser.add_argument('--validfile', help="Path to validation data", required=True)
+    parser.add_argument('--validfile', help="Path to validation data")
+    parser.add_argument('--testfile', help="Path to test data")
     parser.add_argument('--maxseqc', help="Maximum sequence length of context. Sequences longer than this are truncated.", type=int, default=70)
     parser.add_argument('--maxsequ', help="Maximum sequence length of utterance. Sequences longer than this are truncated.", type=int, default=50)
     parser.add_argument('--outputfile', help="Prefix of the output file names. ", type=str, required=True)
