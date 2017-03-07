@@ -7,6 +7,7 @@ The model is from [The Ubuntu Dialogue Corpus: A Large Dataset for Research in U
 * keras
 * tensorflow
 * numpy
+
 ##Quickstart
 We save the Ubuntu data in ./data folder. Data can be download from [here](https://drive.google.com/open?id=0B_bZck-ksdkpVEtVc1R6Y01HMWM). First we run the following code to preprocess data.
 ```
@@ -34,8 +35,8 @@ python eval.py --model_path ./checkpoints/finalmodel.hdf5 --data_path ./ubun-tes
 ```
 With the default setting, the print-out for validation data is 
 ```
-Recall 1 in 10 @ 1:
-Recall 1 in 10 @ 2:
-Recall 1 in 10 @ 5:
+Recall 1 in 10 @ 1:55.3%
+Recall 1 in 10 @ 2:73.2%
+Recall 1 in 10 @ 5:94.0%
 ```
-Check the test data yourself :D
+Check the test data yourself.
