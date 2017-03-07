@@ -120,7 +120,7 @@ def main(arguments):
     parser.add_argument('--metrics',help="Evaluation metrics",choices=['fmeasure', 'recall', 'precision','accuracy'],default='fmeasure')
 
     parser.add_argument('--batch_size',help="Batch size",type=int,default=128)
-    parser.add_argument('--epochs',help="Number of epochs",type=int,default=15)
+    parser.add_argument('--epochs',help="Number of epochs",type=int,default=10)
     args = parser.parse_args(arguments)
     if args.train_from=="":
         train(args)
