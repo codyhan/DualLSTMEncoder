@@ -11,9 +11,9 @@ The model is from [The Ubuntu Dialogue Corpus: A Large Dataset for Research in U
 ##Quickstart
 We save the Ubuntu data in ./data folder. Data can be download from [here](https://drive.google.com/open?id=0B_bZck-ksdkpVEtVc1R6Y01HMWM). First we run the following code to preprocess data.
 ```
-python preprocessing.py --trainfile ./data/train.csv --validfile ./data/valid.csv --testfile ./data/test.csv --outputfile ubun
+python preprocess.py --trainfile ./data/train.csv --validfile ./data/valid.csv --testfile ./data/test.csv --outputfile ubun
 ```
-This step will generate three hdf5 files for train.csv, valid.csv, and test.csv respectively. The file names will be ubun-train.hdf5, ubun-valid.csv, ubun-test.csv. More options with explainations can be found in preprocess.py
+This step will generate three hdf5 files for train.csv, valid.csv, and test.csv respectively. The file names will be ubun-train.hdf5, ubun-valid.hdf5, ubun-test.hdf5. More options with explainations can be found in preprocess.py
 
 Now we can run the model with default configurations.
 ```
