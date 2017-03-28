@@ -3,7 +3,7 @@ import h5py
 from keras.models import load_model
 import argparse
 import sys
-
+import time
 def recall(predy, k):
     num_correct = 0
     num_examples = len(predy)/10
@@ -30,7 +30,10 @@ def main(arguments):
     args = parser.parse_args(arguments)
     model = load_model(args.model_path)
     x1, x2, y = load_data(args.data_path)
+    start = time.time()
     predy = model.predict([x1, x2])
+    end = time.time()
+    print "Speed: ",(end-start)/len(x1),"secs/pair"
     predy = [i[0] for i in predy]
     print "Recall 1 in 10 @ 1:",recall(predy,1)
     print "Recall 1 in 10 @ 2:",recall(predy,2)

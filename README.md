@@ -1,14 +1,16 @@
-#The Dual LSTM Encoder for Retrieval-Based Chatbot(Keras Implementation)
+# The Dual LSTM Encoder for Retrieval-Based Chatbot(Keras Implementation)
 
 The model is from [The Ubuntu Dialogue Corpus: A Large Dataset for Research in Unstructured Multi-Turn Dialogue Systems](https://arxiv.org/pdf/1506.08909.pdf). The big difference between my implementation and the model from the cited paper is that I build two LSTMs for context and utterance seperately whereas in the cited paper the context and the utterance share one  LSTM module.
-##Dependencies
-###Python
+
+## Dependencies
+
+### Python
 * h5py
 * keras
 * tensorflow
 * numpy
 
-##Quickstart
+## Quickstart
 We save the Ubuntu data in ./data folder. Data can be download from [here](https://drive.google.com/open?id=0B_bZck-ksdkpVEtVc1R6Y01HMWM). First we run the following code to preprocess data.
 ```
 python preprocess.py --trainfile ./data/train.csv --validfile ./data/valid.csv --testfile ./data/test.csv --outputfile ubun
